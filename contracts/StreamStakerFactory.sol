@@ -11,11 +11,15 @@ interface IStreamStaker {
 contract StreamStakerFactory {
     address public immutable template;
 
+    event StreamStakerCreated(address indexed owner);
+
     constructor(address _template) {
         template = _template;
     }
 
     function create() external returns (address clone) {
         clone = Clones.clone(template);
+        IStreamStaker(clone).initialize(msg.sender);
+        emit StreamStakerCreated(msg.sender);
     }
 }

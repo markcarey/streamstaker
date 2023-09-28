@@ -28,6 +28,8 @@ contract StreamStaker is IERC777RecipientUpgradeable, ReentrancyGuardUpgradeable
     IERC20 private WETH = IERC20(0x4200000000000000000000000000000000000006);
     ISwapRouter swapRouter = ISwapRouter(0x2626664c2603336E57B271c5C0b26F421741e481);
 
+    event Staked(uint256 amount);
+
     function initialize(address _owner) public initializer {
         owner = _owner;
         __ReentrancyGuard_init();
@@ -51,6 +53,7 @@ contract StreamStaker is IERC777RecipientUpgradeable, ReentrancyGuardUpgradeable
                 amountOutMinimum: 0
             });
         uint256 amountOut = swapRouter.exactInput(params);
+        emit Staked(amountOut);
     }
 
     function tokensReceived(
