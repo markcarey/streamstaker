@@ -17,8 +17,14 @@
   },
   "homepage": "https://github.com/markcarey/streamstaker#readme",
   "dependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@openzeppelin/contracts-upgradeable": "^4.9.3",
     "@superfluid-finance/ethereum-contracts": "^1.8.1",
-    "@uniswap/v3-periphery": "^1.4.4"
+    "@uniswap/v3-periphery": "^1.4.4",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "hardhat": "^2.17.4"
   }
 }
