@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC777/IERC777Upgradeable.sol";
 import { IERC1820RegistryUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/IERC1820RegistryUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC777/IERC777RecipientUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
@@ -22,7 +22,7 @@ contract StreamStaker is IERC777RecipientUpgradeable, ReentrancyGuardUpgradeable
             0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24
         );
     address public owner;
-    ISuperToken private USDbCx = ISupertoken(0x4dB26C973FaE52f43Bd96A8776C2bf1b0DC29556);
+    ISuperToken private USDbCx = ISuperToken(0x4dB26C973FaE52f43Bd96A8776C2bf1b0DC29556);
     IERC20 private USDbC = IERC20(0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA);
     IERC20 private cbETH = IERC20(0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22);
     IERC20 private WETH = IERC20(0x4200000000000000000000000000000000000006);
@@ -40,11 +40,11 @@ contract StreamStaker is IERC777RecipientUpgradeable, ReentrancyGuardUpgradeable
     }
 
     function stake() external nonReentrant {
-        _superToken.downgrade(_superToken.balanceOf(address(this)));
-        //_superToken.getUnderlyingToken()
+        USDbCx.downgrade(USDbCx.balanceOf(address(this)));
+        // TODO: deduct fee?
         ISwapRouter.ExactInputParams memory params =
             ISwapRouter.ExactInputParams({
-                path: abi.encodePacked(USDbC, 500, WETH, 500, cbETH),
+                path: abi.encodePacked(USDbC, uint24(500), WETH, uint24(500), cbETH),
                 recipient: owner,
                 deadline: block.timestamp,
                 amountIn: USDbC.balanceOf(address(this)),
@@ -53,15 +53,15 @@ contract StreamStaker is IERC777RecipientUpgradeable, ReentrancyGuardUpgradeable
         uint256 amountOut = swapRouter.exactInput(params);
     }
 
-    function onTokenReceived(
+    function tokensReceived(
         address operator,
         address from,
         address to,
         uint256 amount,
         bytes calldata userData,
         bytes calldata operatorData
-    ) external override returns (bytes memory) {
-        return "";
+    ) external override {
+
     }
 
 }
