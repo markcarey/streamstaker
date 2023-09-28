@@ -22,11 +22,11 @@ contract StreamStaker is IERC777RecipientUpgradeable, ReentrancyGuardUpgradeable
             0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24
         );
     address public owner;
-    ISuperToken private USDbCx = ISuperToken(0x4dB26C973FaE52f43Bd96A8776C2bf1b0DC29556);
-    IERC20 private USDbC = IERC20(0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA);
-    IERC20 private cbETH = IERC20(0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22);
-    IERC20 private WETH = IERC20(0x4200000000000000000000000000000000000006);
-    ISwapRouter swapRouter = ISwapRouter(0x2626664c2603336E57B271c5C0b26F421741e481);
+    ISuperToken private constant USDbCx = ISuperToken(0x4dB26C973FaE52f43Bd96A8776C2bf1b0DC29556);
+    IERC20 private constant USDbC = IERC20(0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA);
+    IERC20 private constant cbETH = IERC20(0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22);
+    IERC20 private constant WETH = IERC20(0x4200000000000000000000000000000000000006);
+    ISwapRouter private constant swapRouter = ISwapRouter(0x2626664c2603336E57B271c5C0b26F421741e481);
 
     event Staked(uint256 amount);
 
@@ -63,8 +63,6 @@ contract StreamStaker is IERC777RecipientUpgradeable, ReentrancyGuardUpgradeable
         uint256 amount,
         bytes calldata userData,
         bytes calldata operatorData
-    ) external override {
-
-    }
+    ) external override {}
 
 }
