@@ -28,7 +28,7 @@ contract StreamStaker is IERC777RecipientUpgradeable, ReentrancyGuardUpgradeable
     IERC20 private constant WETH = IERC20(0x4200000000000000000000000000000000000006);
     ISwapRouter private constant swapRouter = ISwapRouter(0x2626664c2603336E57B271c5C0b26F421741e481);
 
-    event Staked(uint256 amount);
+    event Staked(uint256 amountIn, uint256 amountOut);
 
     function initialize(address _owner) public initializer {
         owner = _owner;
@@ -44,16 +44,17 @@ contract StreamStaker is IERC777RecipientUpgradeable, ReentrancyGuardUpgradeable
     function stake() external nonReentrant {
         USDbCx.downgrade(USDbCx.balanceOf(address(this)));
         // TODO: deduct fee?
+        uint256 amountIn = USDbC.balanceOf(address(this));
         ISwapRouter.ExactInputParams memory params =
             ISwapRouter.ExactInputParams({
                 path: abi.encodePacked(USDbC, uint24(500), WETH, uint24(500), cbETH),
                 recipient: owner,
                 deadline: block.timestamp,
-                amountIn: USDbC.balanceOf(address(this)),
+                amountIn: amountIn,
                 amountOutMinimum: 0
             });
         uint256 amountOut = swapRouter.exactInput(params);
-        emit Staked(amountOut);
+        emit Staked(amountIn, amountOut);
     }
 
     function tokensReceived(
