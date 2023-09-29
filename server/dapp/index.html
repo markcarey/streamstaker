@@ -96,9 +96,121 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js" type="text/javascript"></script>  
+  <script src="https://cdn.jsdelivr.net/npm/@alch/alchemy-web3@latest/dist/alchemyWeb3.min.js"></script>
+  <script src="/js/abis.js"></script>  
   <script>
+    const zeroAddress = "0x0000000000000000000000000000000000000000";
+
+    const sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    };
+
+    const chains = {};
+    chains["8453"] = {
+        "chainId":  ethers.utils.hexValue(8453),
+        "chainName": "Base Mainnet",
+        "nativeCurrency": {
+            "name": "ETH",
+            "symbol": "ETH",
+            "decimals": 18
+        },
+        "rpcUrls": ["https://mainnet.base.org"],
+        "blockExplorerUrls": ["https://basescan.org/"],
+    }
+
+    var addr = {};
+    addr.base = {
+      "rpc": "mainnet.base.org",
+      "wss": "mainnet.base.org/ws",
+      "factory": "",
+      "implementation": "",
+      "streamStaker": "",
+      "host": "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
+      "cfa": "0x19ba78B9cDB05A877718841c574325fdB53601bb",
+      "USDbC": "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+      "USDbCx": "0x4dB26C973FaE52f43Bd96A8776C2bf1b0DC29556",
+      "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "USDCx": "0xD04383398dD2426297da660F9CCA3d439AF9ce1b",
+      "cbETH": "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22",
+      "WETH": "0x4200000000000000000000000000000000000006",
+    };
+
+    var chain = "base";
+
+    var accounts = [];
+    var provider, ethersSigner;
+    var factory;
+
+    function setupChain() {
+      var rpcURL = addr[chain].rpc;
+      const prov = {"url": "https://"+rpcURL};
+      provider = new ethers.providers.JsonRpcProvider(prov);
+      if (window.ethereum) {
+          provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+      }
+      var wssProvider = new ethers.providers.WebSocketProvider(
+          "wss://" + addr[chain].wss
+      );
+      factory = new ethers.Contract(
+          addr[chain].factory,
+          factoryAbi,
+          wssProvider
+      );
+      web3 = AlchemyWeb3.createAlchemyWeb3("wss://" + addr[chain].wss);
+  }
+  setupChain();
+
+  async function switchChain(chainId) {
+      try {
+          await ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: web3.utils.toHex(chainId) }]
+          });
+      } catch (switchError) {
+          console.log(switchError);
+          // This error code indicates that the chain has not been added to MetaMask.
+          if (switchError.code === 4902) {
+              try {
+                  var switchParams = chains[chainId];
+                  await ethereum.request({
+                      method: 'wallet_addEthereumChain',
+                      params: [
+                          switchParams
+                      ],
+                  });
+                  switchChain(chainId);
+              } catch (addError) {
+                  // handle "add" error
+              }
+          }
+          // handle other "switch" errors
+      }
+      setupChain();
+  }
+
+  provider.on("network", async (newNetwork, oldNetwork) => {
+      if (newNetwork.chainId != 8453) {
+          await switchChain(8453);
+      } else {
+          setupChain();
+      }
+  });
+
+    async function connect(){
+        if (window.ethereum) {
+            //console.log("window.ethereum true");
+            await provider.send("eth_requestAccounts", []);
+            ethersSigner = provider.getSigner();
+            accounts[0] = await ethersSigner.getAddress();
+            //console.log(accounts);
+        } else {
+            // The user doesn't have Metamask installed.
+            console.log("window.ethereum false");
+        } 
+    }
+
     $( document ).ready(function() {
-      const api = `https://streamstaker.finance/api/widget`;
+      const api = `https://streamstaker.finance/api/`;
   
       $("#connect").click(async function() {
         // TODO: connect to metamask
@@ -109,15 +221,14 @@
       });
 
       $("#stream").click(async function(){
-        // TODO: update to address
         var data = {
-          "to": $("#to").val()
+          "to": accounts[0]
         }
         $("#stream-form").hide();
         $("button").hide();
         $("#logo").hide();
         $("#progress").show();
-        const res = await fetch(api, { 
+        const res = await fetch(api + 'widget', { 
           method: 'POST', 
           headers: {
             "Content-Type": "application/json"

@@ -221,7 +221,7 @@ api.get("/api/staker", async function (req, res) {
     }
 });
 
-api.get("/api/widget", async function (req, res) {
+api.post("/api/widget", async function (req, res) {
     const owner = req.q.owner;
     
     // TODO: lookup owner's staker contract address
