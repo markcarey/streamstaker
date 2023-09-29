@@ -215,9 +215,9 @@ api.get("/api/staker", async function (req, res) {
     var to;
     if (stakerDoc.exists) {
         to = stakerDoc.data().address;
-        return res.json({"address": to});
+        return res.json({"status": "success", "stakerAddress": to});
     } else {
-        return res.json({"error": "no staker found for owner"});
+        return res.json({"status": "error", "message": "no staker found for owner"});
     }
 });
 

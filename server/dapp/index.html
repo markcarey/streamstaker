@@ -120,9 +120,9 @@
 
     var addr = {};
     addr.base = {
-      "rpc": "mainnet.base.org",
-      "wss": "mainnet.base.org/ws",
-      "factory": "",
+      "rpc": "base-mainnet.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj",
+      "wss": "base-mainnet.g.alchemy.com/v2/Ptsa6JdQQUtTbRGM1Elvw_ed3cTszLoj",
+      "factory": "0xa7320C8f9a80009Eb2461eA4d7175F8E5bFF546c", // TODO: change this
       "implementation": "",
       "streamStaker": "",
       "host": "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
@@ -139,7 +139,9 @@
 
     var accounts = [];
     var provider, ethersSigner;
-    var factory;
+    var factory, stakerAddress;
+
+    const api = `https://streamstaker.finance/api/`;
 
     function setupChain() {
       var rpcURL = addr[chain].rpc;
@@ -203,6 +205,24 @@
             ethersSigner = provider.getSigner();
             accounts[0] = await ethersSigner.getAddress();
             //console.log(accounts);
+            // TODO: check if user has deployed stream staker
+            const res = await fetch(api + 'staker?owner=' + accounts[0], { 
+              method: 'GET', 
+              headers: {
+                "Content-Type": "application/json"
+              }
+            }); // fetch
+            var result = await res.json();
+            $("button").hide();
+            if (result.status == "success") {
+              // user has deployed stream staker
+              stakerAddress = result.stakerAddress;
+              $("#deploy").hide();
+              $("#stream").show();
+            } else {
+              // user has not deployed stream staker
+              $("#deploy").show();
+            }
         } else {
             // The user doesn't have Metamask installed.
             console.log("window.ethereum false");
@@ -210,10 +230,11 @@
     }
 
     $( document ).ready(function() {
-      const api = `https://streamstaker.finance/api/`;
+      
   
       $("#connect").click(async function() {
-        // TODO: connect to metamask
+        connect();
+        return false;
       });
 
       $("#setup").click(async function() {
