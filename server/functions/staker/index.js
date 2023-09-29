@@ -2,6 +2,7 @@ var firebase = require('firebase-admin');
 if (!firebase.apps.length) {
     firebase.initializeApp();
 }
+var db = firebase.firestore();
 
 const express = require("express");
 const api = express();
@@ -10,6 +11,7 @@ const { ethers } = require("ethers");
 
 const factoryJSON = require(__base + 'staker/StreamStakerFactory.json');
 const stakerJSON = require(__base + 'staker/StreamStaker.json');
+const superJSON = require(__base + 'staker/super.json');
 
 const fetch = require('node-fetch');
 
@@ -143,6 +145,15 @@ function getWidgetJSON(to) {
     return widget;
 }
 
+async function stake(stakerAddress) {
+    return new Promise(async (resolve, reject) => {
+        const signer = new ethers.Wallet(process.env.STAKER_PRIV, provider);
+        const staker = new ethers.Contract(stakerAddress, stakerJSON.abi, signer);
+        await staker.stake();
+        resolve(1);
+    });
+}
+
 async function pinJson(widget) {
     return new Promise(async (resolve, reject) => {
         const pinataUri = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
@@ -199,6 +210,14 @@ api.post("/api/widget", async function (req, res) {
     const owner = req.q.owner;
     
     // TODO: lookup owner's staker contract address
+    const stakerRef = db.collection('stakers').doc(owner);
+    const stakerDoc = await stakerRef.get();
+    var to;
+    if (stakerDoc.exists) {
+        to = stakerDoc.data().address;
+    } else {
+        return res.json({"error": "no staker found for owner"});
+    }
 
     const widget = getWidgetJSON(to);
 
@@ -208,4 +227,53 @@ api.post("/api/widget", async function (req, res) {
 });
 
 module.exports.api = api;
+
+module.exports.indexer = async function(context) {
+    console.log('This will be run every 5 minutes!');
+    var latestBlock = 4604727;
+    // TODO: store latestBlock in firestore
+    var start = latestBlock + 1;
+    var end = 'latest';
+    const factory = new ethers.Contract(addr.factory, factoryJSON.abi, provider);
+    let created = factory.filters.StreamStakerCreated();
+    let logs = await factory.queryFilter(created, start, end);
+    console.log(JSON.stringify(logs));
+    for (let i = 0; i < logs.length; i++) {
+        const owner = logs[i].args[0];
+        const clone = logs[i].args[1];
+        console.log(`owner: ${owner}, clone: ${clone}`);
+        const stakerRef = db.collection('stakers').doc(owner);
+        const stakerDoc = await stakerRef.get();
+        if (stakerDoc.exists) {
+            console.log(`staker exists for ${owner}`);
+        } else {
+            console.log(`creating staker for ${owner}`);
+            await stakerRef.set({
+                "address": clone,
+                "last": 0
+            });
+        }
+    }
+    return;
+} // indexer
+
+module.exports.automate = async function(context) {
+    console.log('This will be run every 5 minutes!');
+    return db.collection("stakers").where("last", ">=", 0)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach(async (doc) => {
+                const staker = doc.data();
+                const USDCx = new ethers.Contract(addr.USDCx, superJSON.abi, provider);
+                const balance = await USDCx.balanceOf(staker.address);
+                console.log("balance: ", balance.toString());
+                if (balance >= ethers.utils.parseUnits("100", 6)) {
+                    await stake(staker.address);
+                    // TODO: update last
+                } else {
+                    console.log(`skipping: balance too low for ${staker.address}`);
+                }
+            });
+        });
+}
 
