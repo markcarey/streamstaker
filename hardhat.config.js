@@ -13,6 +13,9 @@ module.exports = {
         settings: {
           evmVersion: 'paris'
         }
+      },
+      {
+        version: '0.7.6'
       }
     ]
   },
@@ -34,7 +37,8 @@ module.exports = {
       accounts: [{ privateKey: `0x${PRIVATE_KEY}`, balance: "10000000000000000000000"}],
       forking: {
         url: API_URL_BASE,
-        blockNumber: 4569210
+        blockNumber: 4604727,
+        gasPrice: 1000000000 * 10,
       },
       loggingEnabled: true,
       gasMultiplier: 10,

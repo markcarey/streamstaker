@@ -17,6 +17,137 @@
             "type": "constructor"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_code",
+                    "type": "uint256"
+                }
+            ],
+            "name": "APP_RULE",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_AGREEMENT_ALREADY_REGISTERED",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_AGREEMENT_CALLBACK_IS_NOT_ACTION",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_AGREEMENT_IS_NOT_REGISTERED",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_CALL_AGREEMENT_WITH_CTX_FROM_WRONG_ADDRESS",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_CALL_APP_ACTION_WITH_CTX_FROM_WRONG_ADDRESS",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_CANNOT_DOWNGRADE_TO_NON_UPGRADEABLE",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_INVALID_CONFIG_WORD",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_INVALID_OR_EXPIRED_SUPER_APP_REGISTRATION_KEY",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_MAX_256_AGREEMENTS",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_MUST_BE_CONTRACT",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_NEED_MORE_GAS",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_NON_UPGRADEABLE",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_NON_ZERO_LENGTH_PLACEHOLDER_CTX",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_NOT_A_SUPER_APP",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_NO_APP_REGISTRATION_PERMISSIONS",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_ONLY_GOVERNANCE",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_ONLY_LISTED_AGREEMENT",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_RECEIVER_IS_NOT_SUPER_APP",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_SENDER_IS_NOT_SUPER_APP",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_SOURCE_APP_NEEDS_HIGHER_APP_LEVEL",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_SUPER_APP_ALREADY_REGISTERED",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_SUPER_APP_IS_JAILED",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_UNAUTHORIZED_SUPER_APP_FACTORY",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "HOST_UNKNOWN_BATCH_CALL_OPERATION_TYPE",
+            "type": "error"
+        },
+        {
             "anonymous": false,
             "inputs": [
                 {
@@ -109,6 +240,19 @@
             "anonymous": false,
             "inputs": [
                 {
+                    "indexed": false,
+                    "internalType": "uint8",
+                    "name": "version",
+                    "type": "uint8"
+                }
+            ],
+            "name": "Initialized",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
                     "indexed": true,
                     "internalType": "contract ISuperApp",
                     "name": "app",
@@ -184,12 +328,25 @@
         },
         {
             "inputs": [],
-            "name": "MAX_APP_LEVEL",
+            "name": "MAX_APP_CALLBACK_LEVEL",
             "outputs": [
                 {
                     "internalType": "uint256",
                     "name": "",
                     "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "MAX_NUM_AGREEMENTS",
+            "outputs": [
+                {
+                    "internalType": "uint32",
+                    "name": "",
+                    "type": "uint32"
                 }
             ],
             "stateMutability": "view",
@@ -254,7 +411,7 @@
                 },
                 {
                     "internalType": "int256",
-                    "name": "appAllowanceUsedDelta",
+                    "name": "appCreditUsedDelta",
                     "type": "int256"
                 }
             ],
@@ -283,17 +440,17 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "appAllowanceGranted",
+                    "name": "appCreditGranted",
                     "type": "uint256"
                 },
                 {
                     "internalType": "int256",
-                    "name": "appAllowanceUsed",
+                    "name": "appCreditUsed",
                     "type": "int256"
                 },
                 {
                     "internalType": "contract ISuperfluidToken",
-                    "name": "appAllowanceToken",
+                    "name": "appCreditToken",
                     "type": "address"
                 }
             ],
@@ -528,6 +685,13 @@
             "type": "function"
         },
         {
+            "inputs": [],
+            "name": "castrate",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "bytes",
@@ -535,17 +699,12 @@
                     "type": "bytes"
                 },
                 {
-                    "internalType": "uint256",
-                    "name": "appAllowanceWantedMore",
-                    "type": "uint256"
-                },
-                {
                     "internalType": "int256",
-                    "name": "appAllowanceUsedDelta",
+                    "name": "appCreditUsedMore",
                     "type": "int256"
                 }
             ],
-            "name": "ctxUseAllowance",
+            "name": "ctxUseCredit",
             "outputs": [
                 {
                     "internalType": "bytes",
@@ -570,7 +729,7 @@
                     "components": [
                         {
                             "internalType": "uint8",
-                            "name": "appLevel",
+                            "name": "appCallbackLevel",
                             "type": "uint8"
                         },
                         {
@@ -600,17 +759,17 @@
                         },
                         {
                             "internalType": "uint256",
-                            "name": "appAllowanceGranted",
+                            "name": "appCreditGranted",
                             "type": "uint256"
                         },
                         {
                             "internalType": "uint256",
-                            "name": "appAllowanceWanted",
+                            "name": "appCreditWantedDeprecated",
                             "type": "uint256"
                         },
                         {
                             "internalType": "int256",
-                            "name": "appAllowanceUsed",
+                            "name": "appCreditUsed",
                             "type": "int256"
                         },
                         {
@@ -620,7 +779,7 @@
                         },
                         {
                             "internalType": "contract ISuperfluidToken",
-                            "name": "appAllowanceToken",
+                            "name": "appCreditToken",
                             "type": "address"
                         }
                     ],
@@ -689,7 +848,7 @@
                     "type": "address"
                 }
             ],
-            "name": "getAppLevel",
+            "name": "getAppCallbackLevel",
             "outputs": [
                 {
                     "internalType": "uint8",
@@ -750,6 +909,19 @@
                     "internalType": "contract ISuperfluidGovernance",
                     "name": "",
                     "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getNow",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -1136,6 +1308,11 @@
                 {
                     "internalType": "contract ISuperToken",
                     "name": "token",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "newLogicOverride",
                     "type": "address"
                 }
             ],

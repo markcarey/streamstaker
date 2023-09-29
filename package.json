@@ -17,8 +17,8 @@
   },
   "homepage": "https://github.com/markcarey/streamstaker#readme",
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.3",
-    "@openzeppelin/contracts-upgradeable": "^4.9.3",
+    "@openzeppelin/contracts": "^3.3.0",
+    "@openzeppelin/contracts-upgradeable": "^3.3.0",
     "@superfluid-finance/ethereum-contracts": "^1.8.1",
     "@uniswap/v3-periphery": "^1.4.4",
     "dotenv": "^16.3.1",
