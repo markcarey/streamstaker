@@ -206,7 +206,7 @@ api.get("/api", async function (req, res) {
     return res.json({"what": "streamstaker.finance", "why": "tba"});
 });
 
-api.post("/api/widget", async function (req, res) {
+api.get("/api/widget", async function (req, res) {
     const owner = req.q.owner;
     
     // TODO: lookup owner's staker contract address
@@ -275,5 +275,5 @@ module.exports.automate = async function(context) {
                 }
             });
         });
-}
+} // automate
 
