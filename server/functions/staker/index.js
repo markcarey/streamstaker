@@ -206,6 +206,21 @@ api.get("/api", async function (req, res) {
     return res.json({"what": "streamstaker.finance", "why": "tba"});
 });
 
+api.get("/api/staker", async function (req, res) {
+    const owner = req.q.owner;
+    
+    // TODO: lookup owner's staker contract address
+    const stakerRef = db.collection('stakers').doc(owner);
+    const stakerDoc = await stakerRef.get();
+    var to;
+    if (stakerDoc.exists) {
+        to = stakerDoc.data().address;
+        return res.json({"address": to});
+    } else {
+        return res.json({"error": "no staker found for owner"});
+    }
+});
+
 api.get("/api/widget", async function (req, res) {
     const owner = req.q.owner;
     
