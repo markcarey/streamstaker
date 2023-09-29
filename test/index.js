@@ -135,7 +135,7 @@ describe("Superfluid", function () {
         expect(balance).to.be.gt(0);
     });
 
-    it.skip("should swap and stake", async function() {
+    it("should swap to cbETH", async function() {
         const balance = await USDCx.balanceOf(addr.streamStaker);
         console.log("USDCx balance: ", balance.toString());
         streamStaker = new ethers.Contract(addr.streamStaker, streamStakerJSON.abi, signer);
@@ -143,24 +143,35 @@ describe("Superfluid", function () {
             .to.emit(streamStaker, 'Staked');
     });
 
-    it("should swap to WETH", async function() {
+    it("should swap to cbETH AGAIN", async function() {
+        let MONTH = 60 * 60 * 24 * 30;
+        await hre.network.provider.request({
+            method: "evm_increaseTime",
+            params: [MONTH]
+        });
+        await hre.network.provider.send("evm_mine");
         const balance = await USDCx.balanceOf(addr.streamStaker);
         console.log("USDCx balance: ", balance.toString());
         streamStaker = new ethers.Contract(addr.streamStaker, streamStakerJSON.abi, signer);
-        await expect(streamStaker.swap())
+        await expect(streamStaker.stake())
             .to.emit(streamStaker, 'Staked');
-    });
-
-    it("contract should have a WETH balance", async function() {
-        const balance = await WETH.balanceOf(addr.streamStaker);
-        console.log("WETH balance: ", balance.toString());
-        expect(balance).to.be.gt(0);
     });
 
     it("should have a cbETH balance", async function() {
         const balance = await cbETH.balanceOf(process.env.PUBLIC_KEY);
         console.log("cbETH balance: ", balance.toString());
         expect(balance).to.be.gt(0);
+    });
+
+    it("should have collected fees", async function() {
+        const balance = await USDC.balanceOf(process.env.PUBLIC_KEY);
+        console.log("USDC balance: ", balance.toString());
+        const owner = await streamStaker.owner();
+        if (owner == process.env.PUBLIC_KEY) {
+            expect(balance).to.equal(0);
+        } else {
+            expect(balance).to.be.gt(0);
+        }
     });
 
 });
