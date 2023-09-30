@@ -238,7 +238,22 @@
       });
 
       $("#setup").click(async function() {
-        // TODO: deploy stream staker
+        await factory.connect(ethersSigner).create();
+        var latestBlock = 4604727;
+        var start = latestBlock + 1;
+        var end = 'latest';
+        let created = factory.filters.StreamStakerCreated(accounts[0]);
+        factory.on(created, async (owner, clone, event) => {
+          console.log("StreamStakerCreated");
+          console.log(owner);
+          console.log(clone);
+          console.log(event);
+          stakerAddress = clone;
+          $("#deploy").hide();
+          $("#stream").show();
+          // TODO: display stream staker address to user
+        });
+        return false;
       });
 
       $("#stream").click(async function(){
