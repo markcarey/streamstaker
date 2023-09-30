@@ -237,11 +237,8 @@
         return false;
       });
 
-      $("#setup").click(async function() {
+      $("#deploy").click(async function() {
         await factory.connect(ethersSigner).create();
-        var latestBlock = 4604727;
-        var start = latestBlock + 1;
-        var end = 'latest';
         let created = factory.filters.StreamStakerCreated(accounts[0]);
         factory.on(created, async (owner, clone, event) => {
           console.log("StreamStakerCreated");
@@ -258,7 +255,7 @@
 
       $("#stream").click(async function(){
         var data = {
-          "to": accounts[0]
+          "owner": accounts[0]
         }
         $("#stream-form").hide();
         $("button").hide();

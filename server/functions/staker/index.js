@@ -19,7 +19,7 @@ var provider = new ethers.providers.JsonRpcProvider({"url": process.env.API_URL_
 var signer;
 
 var addr = {
-    "factory": "",
+    "factory": "0xa7320C8f9a80009Eb2461eA4d7175F8E5bFF546c",
     "implementation": "",
     "streamStaker": "",
     "host": "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
@@ -245,10 +245,25 @@ module.exports.api = api;
 
 module.exports.indexer = async function(context) {
     console.log('This will be run every 5 minutes!');
-    var latestBlock = 4604727;
-    // TODO: store latestBlock in firestore
+    var latestBlock = 4621712;
+    const statusRef = db.collection('status').doc('latest');
+    const statusDoc = await statusRef.get();
+    if (statusDoc.exists) {
+        latestBlock = statusDoc.data().block;
+    }
     var start = latestBlock + 1;
     var end = 'latest';
+    const block = await provider.getBlockNumber();
+    console.log(`block: ${block}`);
+    if (block - latestBlock > 2000) {
+        start = latestBlock + 1;
+        end = start + 2000 - 1;
+        if (end > block) {
+            end = 'latest';
+        } else {
+            block = end;
+        }
+    }
     const factory = new ethers.Contract(addr.factory, factoryJSON.abi, provider);
     let created = factory.filters.StreamStakerCreated();
     let logs = await factory.queryFilter(created, start, end);
@@ -265,16 +280,20 @@ module.exports.indexer = async function(context) {
             console.log(`creating staker for ${owner}`);
             await stakerRef.set({
                 "address": clone,
-                "last": 0
+                "last": Math.floor(new Date().getTime() / 1000)
             });
         }
     }
+    await statusRef.set({
+        "block": block - 1
+    });
     return;
 } // indexer
 
 module.exports.automate = async function(context) {
     console.log('This will be run every 5 minutes!');
-    return db.collection("stakers").where("last", ">=", 0)
+    const start = Math.floor(new Date().getTime() / 1000) - (60 * 60 * 24);
+    return db.collection("stakers").where("last", "<=", start)
         .get()
         .then((querySnapshot) => {
             querySnapshot.forEach(async (doc) => {
@@ -284,7 +303,9 @@ module.exports.automate = async function(context) {
                 console.log("balance: ", balance.toString());
                 if (balance >= ethers.utils.parseUnits("100", 6)) {
                     await stake(staker.address);
-                    // TODO: update last
+                    await doc.ref.update({
+                        "last": Math.floor(new Date().getTime() / 1000)
+                    });
                 } else {
                     console.log(`skipping: balance too low for ${staker.address}`);
                 }
