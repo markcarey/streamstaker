@@ -60,7 +60,7 @@ describe("StreamStakerFactory", function () {
         const txn = await factory.create();
         const { events } = await txn.wait();
         const cloneEvent = events.find(x => x.event === "StreamStakerCreated");
-        console.log("cloneEvent: ", cloneEvent);
+        //console.log("cloneEvent: ", cloneEvent);
         addr.streamStaker = cloneEvent.args[1];
         expect(addr.streamStaker).to.not.equal("");
     });
@@ -111,33 +111,31 @@ describe("Superfluid", function () {
             "0x"
         );
         var flow = await cfa.getFlow(addr.USDCx, process.env.PUBLIC_KEY, addr.streamStaker);
-        console.log("flow b4: ", flow);
+        console.log("flow: ", flow);
         const chainTime = Math.floor(Date.now() / 1000) + 3600;  // 1 hour from now
         let DAY = 1000 * 60 * 60 * 24;
         let WEEK = 60 * 60 * 24 * 7;
         let MONTH = 60 * 60 * 24 * 30;
-        var getNow = await host.getNow();
-        console.log("getNow: ", getNow.toString());
+        //var getNow = await host.getNow();
+        //console.log("getNow: ", getNow.toString());
         await hre.network.provider.request({
             method: "evm_increaseTime",
             params: [MONTH]
         });
         await hre.network.provider.send("evm_mine");
-        getNow = await host.getNow();
-        console.log("getNow: ", getNow.toString());
-        flow = await cfa.getFlow(addr.USDCx, process.env.PUBLIC_KEY, addr.streamStaker);
-        console.log("flow after: ", flow);
+        //getNow = await host.getNow();
+        //console.log("getNow: ", getNow.toString());
+        //flow = await cfa.getFlow(addr.USDCx, process.env.PUBLIC_KEY, addr.streamStaker);
+        //console.log("flow after: ", flow);
         const balance = await USDCx.balanceOf(addr.streamStaker);
         console.log("USDCx balance: ", balance.toString());
-        console.log("addr.streamStaker", addr.streamStaker);
-        var sRealtimeBal = await USDCx.realtimeBalanceOfNow(addr.streamStaker);
-        console.log("sRealtimeBal: ", sRealtimeBal.toString());
+        //console.log("addr.streamStaker", addr.streamStaker);
         expect(balance).to.be.gt(0);
     });
 
     it("should swap to cbETH", async function() {
         const balance = await USDCx.balanceOf(addr.streamStaker);
-        console.log("USDCx balance: ", balance.toString());
+        //console.log("USDCx balance: ", balance.toString());
         streamStaker = new ethers.Contract(addr.streamStaker, streamStakerJSON.abi, signer);
         await expect(streamStaker.stake())
             .to.emit(streamStaker, 'Staked');
@@ -168,6 +166,7 @@ describe("Superfluid", function () {
         console.log("USDC balance: ", balance.toString());
         const owner = await streamStaker.owner();
         if (owner == process.env.PUBLIC_KEY) {
+            // if the owner calls stake(), no fees are collected
             expect(balance).to.equal(0);
         } else {
             expect(balance).to.be.gt(0);
