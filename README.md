@@ -1,6 +1,6 @@
 # 🌊 Stream Staker
 
-Dollar cost average into yield-earniung staked ETH. Stream `USDC` on Base Mainnet and get `cbETH`. Powered by Superfluid Subscriptions and Uniswap v3, and Built on Base.
+Dollar cost average into yield-earniung staked ETH. Stream `USDC` on Base Mainnet and get `cbETH`. Powered by Superfluid Subscriptions and Uniswap v3, Built on Base.
 
 ## Try it Now on Base
 
