@@ -44,6 +44,7 @@ Since Base Mainnet is not yet supported by [Gelato Automate](https://docs.gelato
 
 Possible next steps include:
 - enhanced front-end that displays `stake()` transaction history
+- create subgraph for indexing
 - documentation!
 - support for other LSD tokens, perhaps on multiple L2 networks
 
