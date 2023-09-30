@@ -301,7 +301,7 @@ module.exports.automate = async function(context) {
                 const USDCx = new ethers.Contract(addr.USDCx, superJSON.abi, provider);
                 const balance = await USDCx.balanceOf(staker.address);
                 console.log("balance: ", balance.toString());
-                if (balance >= ethers.utils.parseUnits("100", 6)) {
+                if (balance >= ethers.utils.parseUnits("100", 18)) {
                     await stake(staker.address);
                     await doc.ref.update({
                         "last": Math.floor(new Date().getTime() / 1000)
