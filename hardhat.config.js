@@ -3,7 +3,7 @@ const dot = require('dotenv').config();
 
 require("@nomiclabs/hardhat-etherscan");
 require("@nomicfoundation/hardhat-chai-matchers");
-const { API_URL_BASE, API_URL_BASEGOERLI, PRIVATE_KEY } = process.env;
+const { API_URL_BASE, API_URL_BASEGOERLI, PRIVATE_KEY, BASESCAN_API_KEY } = process.env;
 
 module.exports = {
   solidity: {
@@ -58,6 +58,7 @@ module.exports = {
    etherscan: {
     apiKey: {
       baseGoerli: "PLACEHOLDER_STRING",
+      base: BASESCAN_API_KEY
     },
     customChains: [
       {
@@ -66,6 +67,14 @@ module.exports = {
         urls: {
          apiURL: "https://api-goerli.basescan.org/api",
          browserURL: "https://goerli.basescan.org"
+        }
+      },
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+         apiURL: "https://api.basescan.org/api",
+         browserURL: "https://basescan.org"
         }
       }
     ]
