@@ -26,7 +26,7 @@ Two contracts were created for Stream Staker:
 - `StreamStakerFactory.sol` is a factory contract that is used to deploy minimal clones of the StreamStaker contract described below. Deployed on Base Mainnet at `0xa7320C8f9a80009Eb2461eA4d7175F8E5bFF546c` [#](https://basescan.org/address/0xa7320c8f9a80009eb2461ea4d7175f8e5bff546c)
 - `StreamStaker.sol` is designed to be a narrowly focused contract, with one deployed for each user, that receives the stream of `USDCx`, which periodically is converted to `cbETH` via the `stake()` function, which sends the `cbETH` to user's wallet. The `stake()` function first unwraps the `USDSCx` to `USDC` and then uses Uniswap v3 on Base to swap first to `WETH`, and then to `cbETH` (the lowest cost route, which each pool having a 0.05% fee). Uniswap sends the resulting `cbETH` to the user's wallet -- the Staker contract never holds any token apart from the accumulating `USDCx`. An example contract that was deployed by the factory can be found at `0xB228aa76b32b5DF03DA7680559e9f0833d0342C4` [#](https://basescan.org/address/0xb228aa76b32b5df03da7680559e9f0833d0342c4)
 
-![stake() transaction](https://streamstaker.finance/images/stake-txn.png)
+![stake transaction](https://streamstaker.finance/images/stake-txn.png)
 
 #### Why deploy one contract for each user?
 
