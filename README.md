@@ -11,6 +11,10 @@ Dollar cost average into yield-earniung staked ETH. Stream `USDC` on Base Mainne
 
 ![stream staking](https://streamstaker.finance/images/stream-staking.png)
 
+## Demo Video
+
+https://youtu.be/-caI98LTgIs
+
 ## How it Works: Setup, Stream, and Stake
 
 *Setup*: Stream Staker deploys a (minimal clone) contract for each user. This `StreamStaker.sol` contract is deployed by the user when they hit the [Setup] button. By using a minimal [clone](https://docs.openzeppelin.com/contracts/4.x/api/proxy#Clones) on the Base L2, these contracts are deployed using only 122,000 gas and cost approx $0.02 to deploy (example: https://basescan.org/tx/0x909c3a013349c14ea151c195705252d48ad53ee96b560fe61f812e771e83b7e7). The user is the owner of the deployed Staker contract.
