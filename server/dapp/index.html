@@ -269,7 +269,8 @@
 
       $("#stream").click(async function(){
         var data = {
-          "owner": accounts[0]
+          "owner": accounts[0],
+          "stakerAddress": stakerAddress
         }
         $("#stream-form").hide();
         $("button").hide();

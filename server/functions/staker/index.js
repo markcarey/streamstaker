@@ -231,7 +231,12 @@ api.post("/api/widget", async function (req, res) {
     if (stakerDoc.exists) {
         to = stakerDoc.data().address;
     } else {
-        return res.json({"error": "no staker found for owner"});
+        // maybe the indexer hasn't run yet
+        if (req.q.stakerAddress) {
+            to = req.q.stakerAddress;
+        } else {
+            return res.json({"error": "no staker found for owner"});
+        }
     }
 
     const widget = getWidgetJSON(to);
